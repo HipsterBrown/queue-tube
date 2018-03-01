@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+  "name": "QueueTube",
+  "description": "Manages an auto-playing queue of YouTube links",
+  "version": "1.0",
+  "applications": {
+    "gecko": {
+      "id": "queue-tube@hipsterbrown.com"
+    }
+  },
+  "background": {
+    "scripts": ["src/background.js"]
+  },
+  "permissions": [
+    "activeTab",
+    "contextMenus",
+    "storage"
+  ]
+}
