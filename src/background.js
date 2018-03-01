@@ -1,35 +1,42 @@
-browser.contextMenus.create({
+const app = typeof browser == 'undefined' ? chrome : browser;
+
+app.contextMenus.create({
   contexts: ['link'],
-  documentUrlPatterns: [
-    '*://www.youtube.com/*',
-  ],
+  documentUrlPatterns: ['*://www.youtube.com/*'],
   id: 'queue-tube',
-  targetUrlPatterns: [
-    '*://www.youtube.com/watch?v=*',
-  ],
+  targetUrlPatterns: ['*://www.youtube.com/watch?v=*'],
   title: 'Copy link to queue',
 });
 
-browser.contextMenus.onClicked.addListener((info, tab) => {
+app.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === 'queue-tube') {
-    const { linkUrl: url, linkText: text, mediaType } = info;
-    
-    if (mediaType) {
+    const {linkUrl: url, linkText: text, selectionText, mediaType} = info;
+
+    if (mediaType || (!text && !selectionText)) {
       // eventually this will be a UI warning
       console.warn('Only text links will work for adding to the queue');
       return;
-    };
+    }
 
     // get the existing queue
     // save the updated queue
     // add some kind of success response, eventually in the UI?
-    browser.storage.sync.get()
-    .then(({ queue = [] }) => {
-      console.log(`Adding link (${text}) to the queue`);
-      return browser.storage.sync.set({ queue: queue.concat({ text, url }) });
-    })
-    .then(() => console.log('Queue successfully updated'))
-    .catch(console.error);
+    // app.storage.sync
+    //   .get()
+    //   .then(({queue = []}) => {
+    //     console.log(`Adding link (${text}) to the queue`);
+    //     return app.storage.sync.set({queue: queue.concat({text, url})});
+    //   })
+    //   .then(() => console.log('Queue successfully updated'))
+    //   .catch(console.error);
+    // why can't chrome use promises? :P
+    app.storage.sync.get(({queue = []}) => {
+      console.log(`Adding link (${text || selectionText}) to the queue`);
+      app.storage.sync.set(
+        {queue: queue.concat({text: text || selectionText, url})},
+        () => console.log('Queue successfully updated'),
+      );
+    });
   }
 });
 
@@ -40,3 +47,4 @@ Notes:
   - https://i.ytimg.com/vi/:id/hqdefault.jpg
 - If I wanted to get more info about each video later, I could add background requests for content details through REST API
   - current endpoints are super clunky
+*/
