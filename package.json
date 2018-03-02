@@ -5,8 +5,8 @@
     "A web extension for creating auto-playing queues of YouTube videos",
   "main": "index.js",
   "scripts": {
-    "build": "browserify src/popup/index.js > src/popup/popup.js",
-    "start": "watchify src/popup/index.js -o src/popup/popup.js",
+    "build": "browserify src/popup/index.js -v > src/popup/popup.js",
+    "start": "watchify src/popup/index.js -o src/popup/popup.js -v",
     "test": "standard && tap test/*.spec.js"
   },
   "keywords": [],

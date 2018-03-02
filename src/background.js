@@ -1,5 +1,9 @@
 const app = browser;
 
+const QUEUE_SUCCESS = 'queue-success';
+const QUEUE_ERROR = 'queue-error';
+const ICON_PATH = 'src/icons/icon.png';
+
 app.contextMenus.create({
   contexts: ['link'],
   documentUrlPatterns: ['*://www.youtube.com/*'],
@@ -13,25 +17,49 @@ app.contextMenus.onClicked.addListener((info, tab) => {
     const {linkUrl: url, linkText: text, selectionText, mediaType} = info;
 
     if (mediaType || (!text && !selectionText)) {
-      // eventually this will be a UI warning
-      console.warn('Only text links will work for adding to the queue');
+      app.notifications.create(QUEUE_ERROR, {
+        iconUrl: ICON_PATH,
+        message: 'Only text links can be added to the queue.',
+        title: 'Error Adding to Queue',
+        type: 'basic',
+      });
       return;
     }
 
     // get the existing queue
     // save the updated queue
-    // add some kind of success response, eventually in the UI or through a browser notification?
     app.storage.sync
       .get()
       .then(({queue = []}) => {
-        console.log(`Adding link (${text || selectionText}) to the queue`);
         return app.storage.sync.set({
           queue: queue.concat({text: text || selectionText, url}),
         });
       })
-      .then(() => console.log('Queue successfully updated'))
-      .catch(console.error);
+      .then(() => {
+        app.notifications.create(QUEUE_SUCCESS, {
+          iconUrl: ICON_PATH,
+          message: `Your watch queue was been updated with ${text ||
+            selectionText}`,
+          title: 'Queue Updated',
+          type: 'basic',
+        });
+      })
+      .catch(error => {
+        app.notifications.create(QUEUE_ERROR, {
+          iconUrl: ICON_PATH,
+          message: error.message || error.toString(),
+          title: 'Error Adding to Queue',
+          type: 'basic',
+        });
+      });
   }
+});
+
+app.browserAction.onClicked.addListener(() => {
+  Promise.all([
+    app.notifications.clear(QUEUE_ERROR),
+    app.notifications.clear(QUEUE_SUCCESS),
+  ]);
 });
 
 /*
