@@ -1,16 +1,24 @@
 {
   "name": "queue-tube",
   "version": "1.0.0",
-  "description": "A web extension for creating auto-playing queues of YouTube videos",
+  "description":
+    "A web extension for creating auto-playing queues of YouTube videos",
   "main": "index.js",
   "scripts": {
+    "build": "browserify src/popup/index.js > src/popup/popup.js",
+    "start": "watchify src/popup/index.js -o src/popup/popup.js",
     "test": "standard && tap test/*.spec.js"
   },
   "keywords": [],
   "author": "Hipsterbrown <headhipster@hipsterbrown.com>",
   "license": "MIT",
   "devDependencies": {
+    "browserify": "^16.1.0",
     "standard": "^10.0.3",
-    "tap": "^11.0.1"
+    "tap": "^11.0.1",
+    "watchify": "^3.10.0"
+  },
+  "dependencies": {
+    "choo": "^6.8.0"
   }
 }

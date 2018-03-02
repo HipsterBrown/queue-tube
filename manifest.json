@@ -8,12 +8,13 @@
       "id": "queue-tube@hipsterbrown.com"
     }
   },
-  "background": {
-    "scripts": ["src/background.js"]
+  "browser_action": {
+    "browser_style": true,
+    "default_title": "QueueTube",
+    "default_popup": "src/popup/index.html"
   },
-  "permissions": [
-    "activeTab",
-    "contextMenus",
-    "storage"
-  ]
+  "background": {
+    "scripts": ["src/browser-polyfill.min.js", "src/background.js"]
+  },
+  "permissions": ["activeTab", "contextMenus", "storage"]
 }
