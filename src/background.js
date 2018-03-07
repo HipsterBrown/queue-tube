@@ -9,7 +9,7 @@ app.contextMenus.create({
   documentUrlPatterns: ['*://www.youtube.com/*'],
   id: 'queue-tube',
   targetUrlPatterns: ['*://www.youtube.com/watch?v=*'],
-  title: 'Copy link to queue',
+  title: 'Add video to queue',
 });
 
 app.contextMenus.onClicked.addListener((info, tab) => {
