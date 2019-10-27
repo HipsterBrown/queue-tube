@@ -12,6 +12,16 @@ app.contextMenus.create({
   title: 'Add video to queue',
 });
 
+app.tabs.executeScript({
+  file: 'src/video-watcher.js',
+});
+
+app.runtime.onMessage.addListener(({ type }) => {
+  if (type === 'video:ended') {
+    playNextVideo();
+  }
+});
+
 app.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === 'queue-tube') {
     const {linkUrl: url, linkText: text, selectionText, mediaType} = info;
@@ -61,6 +71,23 @@ app.browserAction.onClicked.addListener(() => {
     app.notifications.clear(QUEUE_SUCCESS),
   ]);
 });
+
+function playNextVideo () {
+  app.storage.sync.get('queue')
+  .then(({ queue = [] }) => {
+    if (queue.legnth > 0) {
+      app.tabs.update({ url: queue[0].url });
+    }
+  })
+  .catch(error => {
+    app.notifications.create(QUEUE_ERROR, {
+      iconUrl: ICON_PATH,
+      message: error.message || error.toString(),
+      title: 'Error Getting Queue',
+      type: 'basic',
+    });
+  });
+}
 
 /*
 Notes:
